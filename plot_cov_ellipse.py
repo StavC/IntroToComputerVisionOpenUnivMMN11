@@ -1,4 +1,6 @@
 from matplotlib.patches import Ellipse
+import numpy as np
+import matplotlib.pyplot as plt
 
 def plot_cov_ellipse(cov, pos, nstd=2, ax=None, **kwargs):
     """
@@ -24,15 +26,28 @@ def plot_cov_ellipse(cov, pos, nstd=2, ax=None, **kwargs):
         order = vals.argsort()[::-1]
         return vals[order], vecs[:,order]
 
+
+    #plt.figure(figsize=(8,4))
+
     if ax is None:
         ax = plt.gca()
 
+    #points=np.random.multivariate_normal(pos,cov,10)
+    #x,y=zip(*points)
+    x,y=np.random.multivariate_normal(pos,cov,10).T
+
     vals, vecs = eigsorted(cov)
+
     theta = np.degrees(np.arctan2(*vecs[:,0][::-1]))
 
     # Width and height are "full" widths, not radius
     width, height = 2 * nstd * np.sqrt(vals)
-    ellip = Ellipse(xy=pos, width=width, height=height, angle=theta, **kwargs)
+    ellip = Ellipse(xy=pos, width=width, height=height, angle=theta,fill=False, **kwargs)
 
     ax.add_artist(ellip)
+
+    ax.scatter(x,y,c='red',s=10)
+    plt.show()
+
     return ellip
+

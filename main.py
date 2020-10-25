@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 import seaborn as sns
+import plot_cov_ellipse
 
 
 def Question1():
@@ -98,12 +99,78 @@ def Question1():
 
 
 def Question2():
-    print(' ')
+    cov=[[2.48,0.94],[0.94,2.04]]
+    print(cov)
+    pos=[-1,2]
 
+
+    #print(cov,pos)
+    #Question 2.A
+    ellip=plot_cov_ellipse.plot_cov_ellipse(cov,pos,nstd=1)
+
+    # Question 2.B
+    points=np.random.multivariate_normal(pos,cov,10).T
+    a=np.cov(points)
+    print(a)
+
+def Question3():
+
+    sun1 = cv2.imread('sun.jpeg')
+    sun2 = cv2.imread('sun2.jpg')
+    sun1=cv2.resize(sun1,(512,512))
+    sun2=cv2.resize(sun2,(512,512))
+
+    mix = np.hstack((sun1[:, :256], sun2[:, 256:]))
+
+    # creating Gaussian Pyramids for both sun pictures
+    sun1Copy = sun1.copy()
+    GPyramidSun1 = [sun1Copy]
+    for i in range(10):
+        sun1Copy = cv2.pyrDown(sun1Copy)
+        GPyramidSun1.append(sun1Copy)
+
+    sun2Copy = sun2.copy()
+    GPyramidsun2 = [sun2Copy]
+    for i in range(10):
+        sun2Copy = cv2.pyrDown(sun2Copy)
+        GPyramidsun2.append(sun2Copy)
+
+    #now creat laplacian pyramid for both sun pictures
+    sun1Copy = GPyramidSun1[9]
+    LapPyramidSun1 = [sun1Copy]
+    for i in range(9, 0, -1):
+        GausLayer = cv2.pyrUp(GPyramidSun1[i])
+        lapLayer = cv2.subtract(GPyramidSun1[i - 1], GausLayer)
+        LapPyramidSun1.append(lapLayer)
+
+    sun2Copy = GPyramidsun2[9]
+    LapPyramindSun2 = [sun2Copy]
+    for i in range(9, 0, -1):
+        GausLayer = cv2.pyrUp(GPyramidsun2[i])
+        lapLayer = cv2.subtract(GPyramidsun2[i - 1], GausLayer)
+        LapPyramindSun2.append(lapLayer)
+
+    sunsets = []
+    for sun1Lap, sun2Lap in zip(LapPyramidSun1, LapPyramindSun2):
+        cols, rows, ch = sun1Lap.shape
+        laplacian = np.hstack((sun1Lap[:, 0:int(cols / 1.8)], sun2Lap[:, int(cols / 1.8):]))
+        sunsets.append(laplacian)
+
+    blendedPicture = sunsets[0]
+    for i in range(1, 10):
+        blendedPicture = cv2.pyrUp(blendedPicture)
+        blendedPicture = cv2.add(sunsets[i], blendedPicture)
+
+    cv2.imshow("Sun1", sun1)
+    cv2.imshow("Sun2", sun2)
+    cv2.imshow("Both Pictures", mix)
+    cv2.imshow("blendedPicture", blendedPicture)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 
 
 if __name__ == '__main__':
-    Question1()
+    Question3()
 
 
