@@ -100,6 +100,7 @@ def Question1():
 
 def Question2():
     cov=[[2.48,0.94],[0.94,2.04]]
+    vector=[-1,2]
     print(cov)
     pos=[-1,2]
 
@@ -110,8 +111,10 @@ def Question2():
 
     # Question 2.B
     points=np.random.multivariate_normal(pos,cov,10).T
-    a=np.cov(points)
-    print(a)
+    covMatrix=np.cov(points)
+    #print(f' points:  {points} \n')
+    print(f'Average {np.average(points,axis=1)}')
+    print(covMatrix)
 
 def Question3():
 
@@ -156,10 +159,12 @@ def Question3():
         laplacian = np.hstack((sun1Lap[:, 0:int(cols / 1.8)], sun2Lap[:, int(cols / 1.8):]))
         sunsets.append(laplacian)
 
+
     blendedPicture = sunsets[0]
     for i in range(1, 10):
         blendedPicture = cv2.pyrUp(blendedPicture)
         blendedPicture = cv2.add(sunsets[i], blendedPicture)
+
 
     cv2.imshow("Sun1", sun1)
     cv2.imshow("Sun2", sun2)
@@ -171,6 +176,7 @@ def Question3():
 
 
 if __name__ == '__main__':
-    Question3()
-
+    #Question1()
+    Question2()
+    #Question3()
 
