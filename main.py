@@ -115,6 +115,14 @@ def Question2():
     #print(f' points:  {points} \n')
     print(f'Average {np.average(points,axis=1)}')
     print(covMatrix)
+    dst=0.5*(np.trace(np.multiply(np.power(cov,-1),covMatrix))-np.log(np.linalg.det(covMatrix)/np.linalg.det(cov))) # Kullback–Leibler divergence from wikipedia
+    print(f' the K-L Distance is: {dst}')
+    dst2=np.linalg.norm(np.subtract(cov,covMatrix)) #Frobenius norm
+    print(f' the Frobenius Norm is : {dst2}')
+
+    #Question 2.C
+
+    #PictureOriginal=np.random.multivariate_normal(pos,cov,)
 
 def Question3():
 
