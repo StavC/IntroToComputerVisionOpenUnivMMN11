@@ -49,5 +49,5 @@ def plot_cov_ellipse(cov, pos, nstd=2, ax=None, **kwargs):
     ax.scatter(x,y,c='red',s=10)
     plt.show()
 
-    return ellip
+    return ellip,x,y
 

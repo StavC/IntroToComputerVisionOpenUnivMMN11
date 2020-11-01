@@ -4,6 +4,7 @@ import cv2
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plot_cov_ellipse
+from scipy import stats
 
 
 def Question1():
@@ -100,20 +101,24 @@ def Question1():
 
 def Question2():
     cov=[[2.48,0.94],[0.94,2.04]]
-    vector=[-1,2]
     print(cov)
     pos=[-1,2]
 
 
     #print(cov,pos)
     #Question 2.A
-    ellip=plot_cov_ellipse.plot_cov_ellipse(cov,pos,nstd=1)
+    ellip,x,y=plot_cov_ellipse.plot_cov_ellipse(cov,pos,nstd=1)
 
     # Question 2.B
-    points=np.random.multivariate_normal(pos,cov,10).T
+    #points=np.random.multivariate_normal(pos,cov,10).T
+    points=np.array([x,y])
     covMatrix=np.cov(points)
-    #print(f' points:  {points} \n')
-    print(f'Average {np.average(points,axis=1)}')
+
+
+
+    print(f' points:  {points} \n')
+    pos2=np.mean(points, axis=1)
+    print(f'Average {pos2}')
     print(covMatrix)
     dst=0.5*(np.trace(np.multiply(np.power(cov,-1),covMatrix))-np.log(np.linalg.det(covMatrix)/np.linalg.det(cov))) # Kullback–Leibler divergence from wikipedia
     print(f' the K-L Distance is: {dst}')
@@ -122,7 +127,43 @@ def Question2():
 
     #Question 2.C
 
-    #PictureOriginal=np.random.multivariate_normal(pos,cov,)
+
+
+
+    a=np.linspace(-5,3,20)
+    b=np.linspace(-2,6,20)
+    #print(a)
+    points2=[]
+    for i in range(20):
+        for j in range(20):
+            points2.append([a[int(i)],b[int(j)]])
+
+    plt.imshow(points2)
+    plt.show()
+
+
+
+
+    picture1=stats.multivariate_normal.pdf(points2,pos,cov)
+    picture1=picture1.reshape(20,20)
+
+    plt.imshow(picture1)
+    plt.show()
+
+    picture2=stats.multivariate_normal.pdf(points2,pos2,cov)
+    picture2=picture2.reshape(20,20) # 10 10
+    plt.imshow(picture2)
+    plt.show()
+
+    plt.imshow(picture2-picture1)
+    plt.show()
+    plt.imshow(picture1-picture2)
+    plt.show()
+
+
+
+
+
 
 def Question3():
 
