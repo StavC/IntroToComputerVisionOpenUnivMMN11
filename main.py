@@ -100,13 +100,12 @@ def Question1():
 
 
 def Question2():
+    # Question 2.A
     cov=[[2.48,0.94],[0.94,2.04]]
     print(cov)
     pos=[-1,2]
 
 
-    #print(cov,pos)
-    #Question 2.A
     ellip,x,y=plot_cov_ellipse.plot_cov_ellipse(cov,pos,nstd=1)
 
     # Question 2.B
@@ -114,16 +113,16 @@ def Question2():
     points=np.array([x,y])
     covMatrix=np.cov(points)
 
-
-
-    print(f' points:  {points} \n')
+    #print(f' points:  {points} \n')
     pos2=np.mean(points, axis=1)
     print(f'Average {pos2}')
     print(covMatrix)
     dst=0.5*(np.trace(np.multiply(np.power(cov,-1),covMatrix))-np.log(np.linalg.det(covMatrix)/np.linalg.det(cov))) # Kullback–Leibler divergence from wikipedia
     print(f' the K-L Distance is: {dst}')
-    dst2=np.linalg.norm(np.subtract(cov,covMatrix)) #Frobenius norm
+    dst2=np.linalg.norm(np.subtract(cov,covMatrix) + np.linalg.norm(np.subtract(pos,pos2))) #Frobenius norm
     print(f' the Frobenius Norm is : {dst2}')
+    dst3 = np.power(np.linalg.norm(pos - pos2), 2) + np.power(np.linalg.norm(cov - covMatrix), 2)
+    print(f' The Loss is : {dst3}')
 
     #Question 2.C
 
@@ -132,16 +131,13 @@ def Question2():
 
     a=np.linspace(-5,3,20)
     b=np.linspace(-2,6,20)
-    #print(a)
     points2=[]
-    for i in range(20):
+    for i in range(20): #Building the Grid of points
         for j in range(20):
             points2.append([a[int(i)],b[int(j)]])
 
     plt.imshow(points2)
     plt.show()
-
-
 
 
     picture1=stats.multivariate_normal.pdf(points2,pos,cov)
@@ -150,7 +146,7 @@ def Question2():
     plt.imshow(picture1)
     plt.show()
 
-    picture2=stats.multivariate_normal.pdf(points2,pos2,cov)
+    picture2=stats.multivariate_normal.pdf(points2,pos2,covMatrix)
     picture2=picture2.reshape(20,20) # 10 10
     plt.imshow(picture2)
     plt.show()
@@ -161,9 +157,37 @@ def Question2():
     plt.show()
 
 
+    #Question 2.D
 
+    cov = [[2.48, 0.94], [0.94, 2.04]]
+    pos=[-1,2]
+    #K_L_Distances=[]
+    frobenius=[]
+    pointsArray=[]
+    Loss=[]
+    for i in range(50):
+        num_points=10+i*5 #number of points to sample
+        points=np.random.multivariate_normal(pos,cov,num_points).T
+        covMatrix=np.cov(points)
+        pos2 = np.mean(points, axis=1)
+        #dst = 0.5 * (np.trace(np.multiply(np.power(cov, -1), covMatrix)) - np.log( np.linalg.det(covMatrix) / np.linalg.det(cov)))  # Kullback–Leibler divergence from wikipedia
+        dst2 = np.linalg.norm(np.subtract(cov, covMatrix)) + np.linalg.norm(np.subtract(pos,pos2))
+        dst3=np.power(np.linalg.norm(pos-pos2),2) + np.power(np.linalg.norm(cov-covMatrix),2)
+        pointsArray.append(num_points)
+        #K_L_Distances.append(dst)
+        frobenius.append(dst2)
+        Loss.append(dst3)
+    print(pointsArray)
+    #print(K_L_Distances)
+    print(frobenius)
+    print(Loss)
 
-
+    plt.plot(pointsArray,Loss,label='Loss')
+    plt.plot(pointsArray,frobenius,label='Frobenius')
+    #plt.plot(pointsArray,K_L_Distances,label='K-L')
+    plt.legend()
+    plt.show()
+    print(f' the min distance is : {min(Loss)} when sampling : {Loss.index(min(Loss))*5+10}')
 
 def Question3():
 
